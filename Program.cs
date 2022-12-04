@@ -50,3 +50,4 @@ Console.WriteLine($"Time needed to finish is: {hours} hours and {minutesCalculat
 var estimatedFinish = snapshotDateTime.AddHours(hours).AddMinutes(minutesCalculated);
 
 Console.WriteLine($"Estimate time to finish is: {estimatedFinish.ToString(CultureInfo.CurrentCulture)}");
+Console.ReadLine();
