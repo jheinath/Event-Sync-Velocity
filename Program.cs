@@ -1,53 +1,50 @@
-﻿using System.Globalization;
+// Get the starting event details
 
-Console.WriteLine("started successfully");
+Console.Write("Enter the starting event ID: ");
+var startEventId = int.Parse(Console.ReadLine());
 
-Console.WriteLine("Please insert date (dd-mm-yyyy) when you started the event sync");
-var startedEventSyncDateInput = Console.ReadLine();
+Console.Write("Enter the starting timestamp (yyyy-MM-dd HH:mm:ss): ");
+var startTimestamp = DateTime.Parse(Console.ReadLine());
 
-Console.WriteLine("Please insert the time (hh-mm)<24hrs> when you started the event sync");
-var startedEventSyncTimeInput = Console.ReadLine();
+// Get the current event details
+Console.Write("Enter the current event ID: ");
+var currentEventId = int.Parse(Console.ReadLine());
 
-Console.WriteLine("Please insert the overall event amount that needs to be synced");
-var totalEventCount = Console.ReadLine();
+Console.Write("Enter the current timestamp (yyyy-MM-dd HH:mm:ss): ");
+var currentTimestamp = DateTime.Parse(Console.ReadLine());
 
-Console.WriteLine("Please insert the current event version your syncer is at");
-var currentEventCount = Console.ReadLine();
+// Get the target event ID
+Console.Write("Enter the target event ID: ");
+var targetEventId = int.Parse(Console.ReadLine());
 
-Console.WriteLine("Please insert date (dd-mm-yyyy)  of the event snapshot");
-var currentEventSyncDateInput = Console.ReadLine();
+// Calculate the progress made
+var eventsProcessed = currentEventId - startEventId;
+var timeElapsed = currentTimestamp - startTimestamp;
 
-Console.WriteLine("Please insert the time (hh-mm)<24hrs> of the event snapshot");
-var currentEventSyncTimeInput = Console.ReadLine();
+// Estimate time per event
+var timePerEvent = timeElapsed.TotalSeconds / eventsProcessed;
 
-var startedEventSyncDateInputSplitted = startedEventSyncDateInput!.Split('-').ToList();
-var startedEventSyncTimeInputSplitted = startedEventSyncTimeInput!.Split('-').ToList();
-var startedDateTime = new DateTime(int.Parse(startedEventSyncDateInputSplitted.Last()), 
-    int.Parse(startedEventSyncDateInputSplitted.ElementAt(1)), int.Parse(startedEventSyncDateInputSplitted.First()), 
-    int.Parse(startedEventSyncTimeInputSplitted.First()), int.Parse(startedEventSyncTimeInputSplitted.Last()), 0);
-    
-var currentEventSyncDateInputSplitted = currentEventSyncDateInput!.Split('-').ToList();
-var currentEventSyncTimeInputSplitted = currentEventSyncTimeInput!.Split('-').ToList();
-var snapshotDateTime = new DateTime(int.Parse(currentEventSyncDateInputSplitted.Last()), 
-    int.Parse(currentEventSyncDateInputSplitted.ElementAt(1)), int.Parse(currentEventSyncDateInputSplitted.First()), 
-    int.Parse(currentEventSyncTimeInputSplitted.First()), int.Parse(currentEventSyncTimeInputSplitted.Last()), 0);
+// Calculate events synced per hour
+var eventsPerHour = eventsProcessed / timeElapsed.TotalHours;
 
-var timeRun = snapshotDateTime.Subtract(startedDateTime);
+// Calculate remaining events
+var eventsRemaining = targetEventId - currentEventId;
 
-var velocityPerHour = int.Parse(currentEventCount!) / timeRun.TotalHours;
-Console.WriteLine($"Current velocity is {velocityPerHour} events / hour");
+// Estimate time remaining
+var secondsRemaining = eventsRemaining * timePerEvent;
+var timeRemaining = TimeSpan.FromSeconds(secondsRemaining);
 
-var eventAmountUntilFinished = int.Parse(totalEventCount!) - int.Parse(currentEventCount!);
+// Calculate the estimated completion time
+var estimatedCompletionTime = currentTimestamp.Add(timeRemaining);
 
-var hoursNeededToFinish =  eventAmountUntilFinished / velocityPerHour;
+// Output the results
+Console.WriteLine("\nSync Progress:");
+Console.WriteLine($"Events Processed: {eventsProcessed}");
+Console.WriteLine($"Time Elapsed: {timeElapsed}");
+Console.WriteLine($"Estimated Time Per Event: {timePerEvent:F2} seconds");
+Console.WriteLine($"Events Synced Per Hour: {eventsPerHour:F2}");
 
-var hours = (int)hoursNeededToFinish;
-var minutes = hoursNeededToFinish - hours;
-var minutesCalculated = minutes * 60;
-
-Console.WriteLine($"Time needed to finish is: {hours} hours and {minutesCalculated} minutes");
-
-var estimatedFinish = snapshotDateTime.AddHours(hours).AddMinutes(minutesCalculated);
-
-Console.WriteLine($"Estimate time to finish is: {estimatedFinish.ToString(CultureInfo.CurrentCulture)}");
-Console.ReadLine();
+Console.WriteLine("\nEstimated Completion:");
+Console.WriteLine($"Events Remaining: {eventsRemaining}");
+Console.WriteLine($"Time Remaining: {timeRemaining}");
+Console.WriteLine($"Estimated Completion Time: {estimatedCompletionTime}");
